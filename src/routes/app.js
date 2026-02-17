@@ -17,9 +17,11 @@ router.get('/student', requireAuth, async (req, res) => {
   if (user.role !== 'student') return res.redirect('/admin');
 
   const db = req.app.locals.db;
+
+  // ✅ Postgres: no uses datetime(created_at)
   const latest = await get(
     db,
-    'SELECT id, risk_level, risk_score, created_at FROM questionnaires WHERE user_id = ? ORDER BY created_at DESC LIMIT 1',
+    'SELECT id, risk_level, risk_score, created_at FROM questionnaires WHERE user_id = $1 ORDER BY created_at DESC LIMIT 1',
     [user.id]
   );
 
@@ -36,11 +38,8 @@ router.post('/student/form', requireAuth, async (req, res) => {
   const user = req.session.user;
   if (user.role !== 'student') return res.redirect('/admin');
 
-  // ✅ Convertir consented a boolean real
-  const consented =
-    req.body.consented === '1' ||
-    req.body.consented === 'on' ||
-    req.body.consented === true;
+  // ✅ En Postgres consented debe ser boolean (true/false)
+  const consented = req.body.consented === 'on' || req.body.consented === '1' || req.body.consented === true;
 
   if (!consented) {
     req.session.flash = { type: 'warning', message: 'Debes aceptar el mensaje informativo para continuar.' };
@@ -63,13 +62,15 @@ router.post('/student/form', requireAuth, async (req, res) => {
 
   const db = req.app.locals.db;
 
+  // ✅ IMPORTANTE: RETURNING id para obtener el id nuevo en Postgres
   const r = await run(
     db,
-    'INSERT INTO questionnaires (user_id, consented, answers_json, risk_score, risk_level) VALUES (?, ?, ?, ?, ?)',
+    'INSERT INTO questionnaires (user_id, consented, answers_json, risk_score, risk_level) VALUES ($1, $2, $3, $4, $5) RETURNING id',
     [user.id, consented, JSON.stringify(answers), score, level]
   );
 
-  res.redirect(`/student/thanks?id=${r.lastID}`);
+  // ✅ En tu db.js retornamos insertId (no lastID)
+  return res.redirect(`/student/thanks?id=${r.insertId}`);
 });
 
 router.get('/student/thanks', requireAuth, async (req, res) => {
@@ -77,9 +78,10 @@ router.get('/student/thanks', requireAuth, async (req, res) => {
   if (user.role !== 'student') return res.redirect('/admin');
 
   const db = req.app.locals.db;
+
   const q = await get(
     db,
-    'SELECT id, risk_level, risk_score, created_at FROM questionnaires WHERE id = ? AND user_id = ?',
+    'SELECT id, risk_level, risk_score, created_at FROM questionnaires WHERE id = $1 AND user_id = $2',
     [req.query.id, user.id]
   );
 
@@ -92,9 +94,10 @@ router.get('/student/history', requireAuth, async (req, res) => {
   if (user.role !== 'student') return res.redirect('/admin');
 
   const db = req.app.locals.db;
+
   const rows = await all(
     db,
-    'SELECT id, risk_level, risk_score, created_at FROM questionnaires WHERE user_id = ? ORDER BY created_at DESC',
+    'SELECT id, risk_level, risk_score, created_at FROM questionnaires WHERE user_id = $1 ORDER BY created_at DESC',
     [user.id]
   );
 
