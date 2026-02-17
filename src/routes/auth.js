@@ -24,7 +24,8 @@ router.post(
     const email = req.body.email;
     const password = req.body.password;
 
-    const user = await get(db, 'SELECT * FROM users WHERE email = ?', [email]);
+    // ✅ Postgres usa $1, $2...
+    const user = await get(db, 'SELECT * FROM users WHERE email = $1', [email]);
     if (!user) {
       req.session.flash = { type: 'error', message: 'Credenciales incorrectas.' };
       return res.redirect('/auth/login');
@@ -61,20 +62,23 @@ router.post(
     const full_name = req.body.full_name;
     const email = req.body.email;
 
-    const existing = await get(db, 'SELECT id FROM users WHERE email = ?', [email]);
+    const existing = await get(db, 'SELECT id FROM users WHERE email = $1', [email]);
     if (existing) {
       req.session.flash = { type: 'error', message: 'Este correo ya está registrado.' };
       return res.redirect('/auth/register');
     }
 
     const password_hash = await bcrypt.hash(req.body.password, 12);
+
+    // ✅ En Postgres, para obtener id necesitas RETURNING id
     const r = await run(
       db,
-      'INSERT INTO users (full_name, email, password_hash, role) VALUES (?, ?, ?, ?)',
+      'INSERT INTO users (full_name, email, password_hash, role) VALUES ($1, $2, $3, $4) RETURNING id',
       [full_name, email, password_hash, 'student']
     );
 
-    req.session.user = { id: r.lastID, full_name, email, role: 'student' };
+    // r.insertId lo vamos a estandarizar en db.js
+    req.session.user = { id: r.insertId, full_name, email, role: 'student' };
     req.session.flash = { type: 'success', message: 'Registro exitoso. ¡Bienvenido/a!' };
     return res.redirect('/');
   }
