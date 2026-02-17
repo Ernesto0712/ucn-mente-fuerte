@@ -1,3 +1,6 @@
+-- Habilitar extensiones si hacen falta
+-- (no es obligatorio para este esquema)
+
 CREATE TABLE IF NOT EXISTS users (
   id SERIAL PRIMARY KEY,
   full_name TEXT NOT NULL,
@@ -44,5 +47,8 @@ CREATE TABLE IF NOT EXISTS admin_chat (
   created_at TIMESTAMP NOT NULL DEFAULT NOW()
 );
 
-CREATE INDEX IF NOT EXISTS idx_questionnaires_user_created ON questionnaires(user_id, created_at);
-CREATE INDEX IF NOT EXISTS idx_questionnaires_risk ON questionnaires(risk_level, created_at);
+CREATE INDEX IF NOT EXISTS idx_questionnaires_user_created
+  ON questionnaires(user_id, created_at DESC);
+
+CREATE INDEX IF NOT EXISTS idx_questionnaires_risk
+  ON questionnaires(risk_level, created_at DESC);
