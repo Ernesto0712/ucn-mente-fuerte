@@ -1,0 +1,67 @@
+<%- include('../../partials/layout', { title, body: `
+  <div class='glass soft-shadow rounded-3xl p-6 sm:p-8 fade-in'>
+    <div class='text-2xl font-extrabold'>Cuestionario de bienestar psicológico</div>
+    <div class='text-sm text-slate-600 mt-1'>Por favor, lee el mensaje antes de continuar.</div>
+
+    <div class='mt-6 card glass rounded-3xl'>
+      <div class='font-extrabold'>Mensaje informativo</div>
+      <p class='mt-2 text-slate-700 text-sm leading-relaxed'>
+        Este formulario forma parte de una iniciativa para promover la salud mental en adolescentes de la Universidad Central de Nicaragua.
+        Su objetivo es conocer experiencias, emociones y necesidades relacionadas con el bienestar psicológico, con el fin de fomentar espacios de apoyo,
+        prevención y crecimiento personal. Tus respuestas son confidenciales y contribuirán a fortalecer la salud mental en la comunidad estudiantil.
+      </p>
+
+      <div class='mt-4 flex items-start gap-3'>
+        <input id='consented' name='consented' type='checkbox' class='mt-1' form='qform' required />
+        <label for='consented' class='text-sm text-slate-700'>He leído y acepto continuar con el formulario.</label>
+      </div>
+    </div>
+
+    <form id='qform' class='mt-8 space-y-6' method='POST' action='/student/form'>
+      <div class='grid lg:grid-cols-2 gap-6'>
+        <div>
+          <label class='font-bold'>1) ¿Qué le trae por aquí hoy? ¿Cuál es el problema desde su punto de vista?</label>
+          <textarea class='input mt-2' name='q1' required></textarea>
+        </div>
+        <div>
+          <label class='font-bold'>2) ¿Cómo le hace sentir este problema y con qué frecuencia ocurre?</label>
+          <textarea class='input mt-2' name='q2' required></textarea>
+        </div>
+        <div>
+          <label class='font-bold'>3) ¿Qué mejoras le gustaría ver en su vida si solucionara este problema?</label>
+          <textarea class='input mt-2' name='q3' required></textarea>
+        </div>
+        <div>
+          <label class='font-bold'>4) ¿Cómo describiría su estado de ánimo en general últimamente?</label>
+          <textarea class='input mt-2' name='q4' required></textarea>
+        </div>
+        <div>
+          <label class='font-bold'>5) ¿Ha notado cambios en su memoria, pensamiento o energía?</label>
+          <textarea class='input mt-2' name='q5' required></textarea>
+        </div>
+        <div>
+          <label class='font-bold'>6) ¿Qué mecanismos utiliza para manejar el estrés o situaciones difíciles?</label>
+          <textarea class='input mt-2' name='q6' required></textarea>
+        </div>
+        <div>
+          <label class='font-bold'>7) ¿Ha recibido atención psicológica o psiquiátrica anteriormente?</label>
+          <textarea class='input mt-2' name='q7' required></textarea>
+        </div>
+        <div>
+          <label class='font-bold'>8) ¿Existen antecedentes de enfermedades mentales o adicciones en su familia?</label>
+          <textarea class='input mt-2' name='q8' required></textarea>
+        </div>
+        <div class='lg:col-span-2'>
+          <label class='font-bold'>9) ¿Cómo es un día típico en su vida (rutina, sueño, alimentación)? ¿Cómo es su relación con su familia, amigos o pareja? ¿Qué es lo que menos le gusta de su persona o qué le genera inseguridad? ¿Qué es lo que más agradece o valora de su vida?</label>
+          <textarea class='input mt-2' name='q9' required></textarea>
+          <div class='text-xs text-slate-500 mt-2'>Tip: Puedes responder en párrafos o con viñetas.</div>
+        </div>
+      </div>
+
+      <div class='flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between'>
+        <a class='btn btn-secondary' href='/student'>Volver</a>
+        <button class='btn btn-primary' type='submit'>Enviar respuestas</button>
+      </div>
+    </form>
+  </div>
+` }) %>

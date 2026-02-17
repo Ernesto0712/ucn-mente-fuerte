@@ -1,0 +1,98 @@
+<% const badgeClass = (lvl)=> lvl==='critical'?'badge-critical':(lvl==='at_risk'?'badge-risk':'badge-normal'); %>
+<% const badgeText = (lvl)=> lvl==='critical'?'Crítico':(lvl==='at_risk'?'En riesgo':'Normal'); %>
+
+<%- include('../../partials/layout', { title, body: `
+  <div class='flex flex-col lg:flex-row gap-6'>
+    <div class='flex-1 glass soft-shadow rounded-3xl p-6 sm:p-8 fade-in'>
+      <div class='flex items-start justify-between gap-4'>
+        <div>
+          <div class='text-2xl font-extrabold'>${q.full_name}</div>
+          <div class='text-sm text-slate-600'>${q.email}</div>
+          <div class='text-sm text-slate-600 mt-1'>Enviado: ${new Date(q.created_at+'Z').toLocaleString('es-ES')}</div>
+        </div>
+        <div class='badge ${badgeClass(q.risk_level)}'>${badgeText(q.risk_level)} · ${q.risk_score}</div>
+      </div>
+
+      <div class='mt-8 space-y-4'>
+        ${Object.entries(answers).map(([k,v], idx)=>`
+          <div class='card glass rounded-3xl'>
+            <div class='font-extrabold'>${idx+1}) ${labelFor(k)}</div>
+            <div class='mt-2 text-slate-700 text-sm whitespace-pre-wrap'>${escapeHtml(v)}</div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+
+    <div class='w-full lg:w-[420px] space-y-6 fade-in'>
+      <div class='glass soft-shadow rounded-3xl p-6'>
+        <div class='font-extrabold text-lg'>Clasificar estado</div>
+        <div class='text-xs text-slate-500 mt-1'>Revisa las respuestas y decide el estado del caso. Esto actualiza el panel.</div>
+        <form class='mt-4 grid grid-cols-2 gap-3' method='POST' action='/admin/questionnaires/${q.id}/status'>
+          <select class='input col-span-2' name='risk_level' required>
+            <option value='normal' ${q.risk_level==='normal'?'selected':''}>Normal</option>
+            <option value='at_risk' ${q.risk_level==='at_risk'?'selected':''}>En riesgo</option>
+            <option value='critical' ${q.risk_level==='critical'?'selected':''}>Crítico</option>
+          </select>
+          <input class='input col-span-2' name='risk_score' placeholder='Puntaje (opcional, 0–999)' value='${q.risk_score ?? ''}' />
+          <button class='btn btn-primary col-span-2' type='submit'>Guardar estado</button>
+        </form>
+      </div>
+
+      <div class='glass soft-shadow rounded-3xl p-6'>
+        <div class='font-extrabold text-lg'>Agregar nota</div>
+        <form class='mt-4 space-y-3' method='POST' action='/admin/questionnaires/${q.id}/note'>
+          <textarea class='input' name='note' placeholder='Ej: Contactar para cita el miércoles 10:00am. Observaciones…' required></textarea>
+          <button class='btn btn-primary w-full' type='submit'>Guardar nota</button>
+        </form>
+      </div>
+
+      <div class='glass soft-shadow rounded-3xl p-6'>
+        <div class='font-extrabold text-lg'>Enviar correo</div>
+        <div class='text-xs text-slate-500 mt-1'>Recomendado: Gmail (SMTP) con App Password en .env.</div>
+        <form class='mt-4 space-y-3' method='POST' action='/admin/questionnaires/${q.id}/email'>
+          <input class='input' name='subject' placeholder='Asunto (ej: Invitación a cita de apoyo)' required />
+          <textarea class='input' name='message' placeholder='Escribe el mensaje…\nIncluye fecha/hora sugerida y cómo confirmar.' required></textarea>
+          <button class='btn btn-primary w-full' type='submit'>Enviar correo</button>
+        </form>
+      </div>
+
+      <div class='glass soft-shadow rounded-3xl p-6'>
+        <div class='font-extrabold text-lg'>Historial de notas</div>
+        <div class='mt-3 space-y-3 max-h-[320px] overflow-auto pr-1'>
+          ${notes.length ? notes.map(n=>`
+            <div class='card glass rounded-3xl'>
+              <div class='text-sm font-extrabold'>${n.admin_name} <span class='text-slate-500 font-normal'>· ${new Date(n.created_at+'Z').toLocaleString('es-ES')}</span></div>
+              <div class='text-sm text-slate-700 mt-2 whitespace-pre-wrap'>${escapeHtml(n.note)}</div>
+            </div>
+          `).join('') : `<div class='text-sm text-slate-600'>Sin notas aún.</div>`}
+        </div>
+      </div>
+
+      <a class='btn btn-secondary w-full' href='/admin'>Volver al panel</a>
+    </div>
+  </div>
+` }) %>
+
+<% function labelFor(k){
+  const map={
+    q1:'Motivo de consulta (problema desde su punto de vista)',
+    q2:'Cómo se siente y frecuencia',
+    q3:'Mejoras esperadas',
+    q4:'Estado de ánimo',
+    q5:'Cambios en memoria/pensamiento/energía',
+    q6:'Mecanismos para manejar estrés',
+    q7:'Atención psicológica/psiquiátrica previa',
+    q8:'Antecedentes familiares',
+    q9:'Rutina + relaciones + autoestima + gratitud'
+  };
+  return map[k]||k;
+}
+function escapeHtml(str){
+  return String(str)
+    .replaceAll('&','&amp;')
+    .replaceAll('<','&lt;')
+    .replaceAll('>','&gt;')
+    .replaceAll('"','&quot;')
+    .replaceAll("'",'&#39;');
+}
+%>

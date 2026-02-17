@@ -1,0 +1,44 @@
+<%- include('../../partials/layout', { title, body: `
+<div class='grid lg:grid-cols-2 gap-6 items-center'>
+  <div class='glass soft-shadow rounded-3xl p-8 fade-in'>
+    <div class='flex items-center gap-4'>
+      <img src='/public/img/logo.png' class='w-16 h-16 rounded-full soft-shadow floaty' alt='Logo'/>
+      <div>
+        <div class='text-2xl font-extrabold'>Iniciar sesión</div>
+        <div class='text-sm text-slate-600'>Accede para completar el cuestionario o dar seguimiento.</div>
+      </div>
+    </div>
+
+    <form class='mt-6 space-y-4' method='POST' action='/auth/login'>
+      <div>
+        <label class='text-sm font-bold'>Correo</label>
+        <input class='input mt-1' type='email' name='email' placeholder='tucorreo@ucn.edu.ni' required />
+      </div>
+      <div>
+        <label class='text-sm font-bold'>Contraseña</label>
+        <input class='input mt-1' type='password' name='password' placeholder='••••••••' required />
+      </div>
+      <button class='btn btn-primary w-full' type='submit'>Entrar</button>
+    </form>
+
+    <div class='mt-4 text-sm text-slate-600'>
+      ¿No tienes cuenta? <a class='link' href='/auth/register'>Regístrate</a>
+    </div>
+  </div>
+
+  <div class='glass soft-shadow rounded-3xl p-8 hidden lg:block fade-in'>
+    <div class='text-xl font-extrabold'>Bienestar psicológico</div>
+    <p class='mt-2 text-slate-600'>Esta plataforma busca promover espacios de apoyo, prevención y crecimiento personal en adolescentes y jóvenes de la UCN.</p>
+    <div class='mt-6 grid grid-cols-2 gap-4'>
+      <div class='card glass rounded-3xl'>
+        <div class='font-bold'>Confidencialidad</div>
+        <div class='text-sm text-slate-600 mt-1'>Tus respuestas se guardan de forma segura y se usan solo para apoyo y seguimiento.</div>
+      </div>
+      <div class='card glass rounded-3xl'>
+        <div class='font-bold'>Seguimiento</div>
+        <div class='text-sm text-slate-600 mt-1'>Si se detecta riesgo, el personal autorizado puede contactarte por correo.</div>
+      </div>
+    </div>
+  </div>
+</div>
+` }) %>

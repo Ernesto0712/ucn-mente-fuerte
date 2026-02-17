@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title><%= title %> | Centro Social en Línea – Mentes Fuertes</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <link rel="icon" href="/public/img/logo.png" />
+  <link rel="stylesheet" href="/public/css/app.css" />
+</head>
+<body class="text-slate-800">
+
+  <%- include('./nav') %>
+
+  <main class="max-w-6xl mx-auto px-4 sm:px-6 py-8">
+    <% if (flash) { %>
+      <div class="fade-in mb-6">
+        <div class="glass soft-shadow rounded-2xl p-4 border-l-4 <%= flash.type==='success' ? 'border-green-400' : flash.type==='warning' ? 'border-amber-400' : 'border-rose-400' %>">
+          <div class="font-bold"><%= flash.type === 'success' ? 'Listo' : flash.type === 'warning' ? 'Atención' : 'Error' %></div>
+          <div class="text-sm text-slate-700"><%= flash.message %></div>
+        </div>
+      </div>
+    <% } %>
+
+    <%- body %>
+  </main>
+
+  <footer class="py-10">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 text-center text-sm text-slate-500">
+      <div>Centro Social en Línea – Mentes Fuertes · UCN</div>
+      <div class="mt-1">Este sistema apoya el registro y seguimiento; no sustituye la atención profesional inmediata.</div>
+    </div>
+  </footer>
+
+</body>
+</html>

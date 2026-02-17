@@ -1,0 +1,47 @@
+<%- include('../../partials/layout', { title, body: `
+  <div class='grid lg:grid-cols-3 gap-6'>
+    <div class='lg:col-span-2 glass soft-shadow rounded-3xl p-6 sm:p-8 fade-in'>
+      <div class='text-2xl font-extrabold'>Chat interno (admins)</div>
+      <div class='text-sm text-slate-600 mt-1'>Úsalo para coordinar seguimientos. No se comparte con estudiantes.</div>
+
+      <form class='mt-5 flex gap-3' method='POST' action='/admin/chat'>
+        <input class='input flex-1' name='message' placeholder='Escribe un mensaje...' maxlength='800' required />
+        <button class='btn btn-primary' type='submit'>Enviar</button>
+      </form>
+
+      <div class='mt-6 space-y-3 max-h-[520px] overflow-auto pr-1'>
+        ${messages.length ? messages.map(m=>`
+          <div class='card glass rounded-3xl'>
+            <div class='text-sm font-extrabold'>${m.full_name}
+              <span class='text-slate-500 font-normal'>· ${new Date(m.created_at+'Z').toLocaleString('es-ES')}</span>
+            </div>
+            <div class='text-sm text-slate-700 mt-2 whitespace-pre-wrap'>${escapeHtml(m.message)}</div>
+          </div>
+        `).join('') : `<div class='text-sm text-slate-600'>Aún no hay mensajes.</div>`}
+      </div>
+    </div>
+
+    <div class='glass soft-shadow rounded-3xl p-6 sm:p-8 fade-in'>
+      <div class='font-extrabold text-lg'>Buenas prácticas</div>
+      <ul class='mt-3 text-sm text-slate-600 space-y-2 list-disc pl-5'>
+        <li>Evita datos sensibles innecesarios.</li>
+        <li>Registra acuerdos importantes como notas dentro del caso.</li>
+        <li>Prioriza atención a casos críticos.</li>
+      </ul>
+
+      <div class='mt-6'>
+        <a class='btn btn-secondary w-full' href='/admin'>Volver al panel</a>
+      </div>
+    </div>
+  </div>
+` }) %>
+
+<% function escapeHtml(str){
+  return String(str)
+    .replaceAll('&','&amp;')
+    .replaceAll('<','&lt;')
+    .replaceAll('>','&gt;')
+    .replaceAll('"','&quot;')
+    .replaceAll("'",'&#39;');
+}
+%>

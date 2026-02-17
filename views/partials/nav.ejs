@@ -1,0 +1,71 @@
+<header class="sticky top-0 z-20" x-data="{ open: false }" @keydown.escape.window="open=false">
+  <div class="glass">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between gap-3">
+      <a href="/" class="flex items-center gap-3 min-w-0">
+        <img src="/public/img/logo.png" alt="Logo" class="w-10 h-10 rounded-full soft-shadow shrink-0" />
+        <div class="min-w-0">
+          <div class="font-extrabold leading-tight text-sm sm:text-base truncate">Centro Social en Línea</div>
+          <div class="text-xs text-slate-600 -mt-0.5">Mentes Fuertes</div>
+        </div>
+      </a>
+
+      <!-- Desktop nav -->
+      <nav class="hidden sm:flex items-center gap-3">
+        <% if (!currentUser) { %>
+          <a class="btn btn-secondary" href="/auth/login">Iniciar sesión</a>
+          <a class="btn btn-primary" href="/auth/register">Registrarme</a>
+        <% } else { %>
+          <% if (currentUser.role === 'student') { %>
+            <a class="btn btn-secondary" href="/student">Panel</a>
+            <a class="btn btn-secondary" href="/student/form">Cuestionario</a>
+            <a class="btn btn-secondary" href="/student/history">Mis registros</a>
+          <% } else { %>
+            <a class="btn btn-secondary" href="/admin">Panel</a>
+            <a class="btn btn-secondary" href="/admin/users">Admins</a>
+            <a class="btn btn-secondary" href="/admin/chat">Chat</a>
+          <% } %>
+
+          <form method="POST" action="/auth/logout" class="inline">
+            <button class="btn btn-primary" type="submit">Salir</button>
+          </form>
+        <% } %>
+      </nav>
+
+      <!-- Mobile menu button -->
+      <button
+        class="sm:hidden btn btn-secondary px-3"
+        type="button"
+        @click="open=!open"
+        :aria-expanded="open.toString()"
+        aria-controls="mobileNav"
+        aria-label="Abrir menú"
+      >
+        <span class="text-lg leading-none">☰</span>
+      </button>
+    </div>
+
+    <!-- Mobile dropdown -->
+    <div id="mobileNav" class="sm:hidden px-4 pb-3" x-show="open" x-transition.opacity.duration.150ms @click.outside="open=false">
+      <div class="rounded-2xl soft-shadow border border-white/50 bg-white/70 backdrop-blur p-2">
+        <% if (!currentUser) { %>
+          <a class="mobile-link" href="/auth/login" @click="open=false">Iniciar sesión</a>
+          <a class="mobile-link mobile-link-primary" href="/auth/register" @click="open=false">Registrarme</a>
+        <% } else { %>
+          <% if (currentUser.role === 'student') { %>
+            <a class="mobile-link" href="/student" @click="open=false">Panel</a>
+            <a class="mobile-link" href="/student/form" @click="open=false">Cuestionario</a>
+            <a class="mobile-link" href="/student/history" @click="open=false">Mis registros</a>
+          <% } else { %>
+            <a class="mobile-link" href="/admin" @click="open=false">Panel</a>
+            <a class="mobile-link" href="/admin/users" @click="open=false">Admins</a>
+            <a class="mobile-link" href="/admin/chat" @click="open=false">Chat</a>
+          <% } %>
+
+          <form method="POST" action="/auth/logout" class="mt-2">
+            <button class="mobile-link mobile-link-primary w-full" type="submit">Salir</button>
+          </form>
+        <% } %>
+      </div>
+    </div>
+  </div>
+</header>

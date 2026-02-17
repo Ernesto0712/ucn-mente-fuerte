@@ -1,0 +1,43 @@
+<%- include('../../partials/layout', { title, body: `
+  <div class='grid lg:grid-cols-3 gap-6'>
+    <div class='lg:col-span-2 glass soft-shadow rounded-3xl p-6 sm:p-8 fade-in'>
+      <div class='text-2xl font-extrabold'>Administradores</div>
+      <div class='text-sm text-slate-600 mt-1'>Solo usuarios con rol administrador pueden ver casos y el chat interno.</div>
+
+      <div class='mt-6 overflow-x-auto'>
+        <table class='w-full text-sm'>
+          <thead>
+            <tr class='text-left text-slate-600'>
+              <th class='py-2'>Nombre</th>
+              <th class='py-2'>Correo</th>
+              <th class='py-2'>Creado</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${admins.length ? admins.map(a=>`
+              <tr class='border-t border-slate-200/60'>
+                <td class='py-3 font-bold'>${a.full_name}</td>
+                <td class='py-3 text-slate-600'>${a.email}</td>
+                <td class='py-3 text-slate-600'>${new Date(a.created_at+'Z').toLocaleString('es-ES')}</td>
+              </tr>
+            `).join('') : `<tr><td colspan='3' class='py-6 text-slate-600'>Aún no hay administradores.</td></tr>`}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class='glass soft-shadow rounded-3xl p-6 sm:p-8 fade-in'>
+      <div class='font-extrabold text-lg'>Crear nuevo admin</div>
+      <form class='mt-4 space-y-3' method='POST' action='/admin/users/create-admin'>
+        <input class='input' name='full_name' placeholder='Nombre completo' required />
+        <input class='input' type='email' name='email' placeholder='correo@ucn.edu.ni' required />
+        <input class='input' type='password' name='password' placeholder='Contraseña (mín 6)' required />
+        <button class='btn btn-primary w-full' type='submit'>Crear</button>
+      </form>
+
+      <div class='mt-6'>
+        <a class='btn btn-secondary w-full' href='/admin'>Volver</a>
+      </div>
+    </div>
+  </div>
+` }) %>

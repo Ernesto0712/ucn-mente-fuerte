@@ -1,0 +1,72 @@
+<% const badgeClass = (lvl)=> lvl==='critical'?'badge-critical':(lvl==='at_risk'?'badge-risk':'badge-normal'); %>
+<% const badgeText = (lvl)=> lvl==='critical'?'Crítico':(lvl==='at_risk'?'En riesgo':'Normal'); %>
+
+<%- include('../../partials/layout', { title, body: `
+  <div class='grid lg:grid-cols-3 gap-6'>
+    <div class='lg:col-span-2 glass soft-shadow rounded-3xl p-6 sm:p-8 fade-in'>
+      <div class='text-2xl font-extrabold'>Panel de seguimiento</div>
+      <div class='text-sm text-slate-600 mt-1'>Casos con señales de riesgo para dar apoyo oportuno.</div>
+
+      <div class='mt-6 grid sm:grid-cols-3 gap-4'>
+        <div class='card glass rounded-3xl'>
+          <div class='text-sm text-slate-600'>Total registros</div>
+          <div class='text-3xl font-extrabold mt-1'>${stats.total}</div>
+        </div>
+        <div class='card glass rounded-3xl'>
+          <div class='text-sm text-slate-600'>En riesgo</div>
+          <div class='text-3xl font-extrabold mt-1'>${stats.at_risk}</div>
+        </div>
+        <div class='card glass rounded-3xl'>
+          <div class='text-sm text-slate-600'>Críticos</div>
+          <div class='text-3xl font-extrabold mt-1'>${stats.critical}</div>
+        </div>
+      </div>
+
+      <div class='mt-8'>
+        <div class='font-extrabold'>Lista priorizada</div>
+        <div class='text-sm text-slate-600'>Ordenado por criticidad y fecha.</div>
+
+        <div class='mt-4 overflow-x-auto'>
+          <table class='w-full text-sm'>
+            <thead>
+              <tr class='text-left text-slate-600'>
+                <th class='py-2'>Estudiante</th>
+                <th class='py-2'>Correo</th>
+                <th class='py-2'>Estado</th>
+                <th class='py-2'>Fecha</th>
+                <th class='py-2'>Acción</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${critical.length ? critical.map(r=>`
+                <tr class='border-t border-slate-200/60'>
+                  <td class='py-3 font-bold'>${r.full_name}</td>
+                  <td class='py-3 text-slate-600'>${r.email}</td>
+                  <td class='py-3'><span class='badge ${badgeClass(r.risk_level)}'>${badgeText(r.risk_level)} · ${r.risk_score}</span></td>
+                  <td class='py-3 text-slate-600'>${new Date(r.created_at+'Z').toLocaleString('es-ES')}</td>
+                  <td class='py-3'><a class='link' href='/admin/questionnaires/${r.id}'>Ver</a></td>
+                </tr>
+              `).join('') : `
+                <tr><td colspan='5' class='py-6 text-slate-600'>No hay casos en riesgo por ahora.</td></tr>
+              `}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class='glass soft-shadow rounded-3xl p-6 sm:p-8 fade-in'>
+      <div class='font-extrabold text-lg'>Herramientas</div>
+      <div class='mt-4 space-y-3'>
+        <a class='btn btn-primary w-full' href='/admin/questionnaires'>Ver todas las respuestas</a>
+        <a class='btn btn-secondary w-full' href='/admin/users'>Administradores</a>
+        <a class='btn btn-secondary w-full' href='/admin/chat'>Chat interno</a>
+      </div>
+
+      <div class='mt-8 card glass rounded-3xl'>
+        <div class='font-bold'>Importante</div>
+        <div class='text-sm text-slate-600 mt-1'>La clasificación es automática (heurística). Usa criterio profesional al contactar.</div>
+      </div>
+    </div>
+  </div>
+` }) %>

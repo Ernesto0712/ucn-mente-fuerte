@@ -1,0 +1,17 @@
+<% const msg = q.risk_level==='critical'
+  ? "Gracias. Detectamos señales de malestar significativo. Un administrador autorizado podría contactarte por correo para ofrecer apoyo. Si te sientes en peligro inmediato, busca ayuda de emergencia local."
+  : q.risk_level==='at_risk'
+    ? "Gracias. Tu registro fue guardado. Si necesitas apoyo, no estás solo/a: busca un docente, familiar o servicio de orientación."
+    : "Gracias. Tu registro fue guardado de forma confidencial.";
+%>
+
+<%- include('../../partials/layout', { title, body: `
+  <div class='glass soft-shadow rounded-3xl p-8 text-center fade-in'>
+    <div class='text-2xl font-extrabold'>¡Gracias por responder!</div>
+    <p class='mt-3 text-slate-700 max-w-2xl mx-auto'>${msg}</p>
+    <div class='mt-6 flex flex-col sm:flex-row gap-3 justify-center'>
+      <a class='btn btn-primary' href='/student'>Ir a mi panel</a>
+      <a class='btn btn-secondary' href='/student/history'>Ver mis registros</a>
+    </div>
+  </div>
+` }) %>

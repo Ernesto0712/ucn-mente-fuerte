@@ -1,0 +1,37 @@
+<% const badgeClass = (lvl)=> lvl==='critical'?'badge-critical':(lvl==='at_risk'?'badge-risk':'badge-normal'); %>
+<% const badgeText = (lvl)=> lvl==='critical'?'Crítico':(lvl==='at_risk'?'En riesgo':'Normal'); %>
+
+<%- include('../../partials/layout', { title, body: `
+  <div class='glass soft-shadow rounded-3xl p-6 sm:p-8 fade-in'>
+    <div class='flex items-center justify-between gap-3'>
+      <div>
+        <div class='text-2xl font-extrabold'>Mis registros</div>
+        <div class='text-sm text-slate-600'>Historial de envíos del cuestionario.</div>
+      </div>
+      <a class='btn btn-primary' href='/student/form'>Nuevo envío</a>
+    </div>
+
+    <div class='mt-6 overflow-x-auto'>
+      <table class='w-full text-sm'>
+        <thead>
+          <tr class='text-left text-slate-600'>
+            <th class='py-2'>Fecha</th>
+            <th class='py-2'>Estado</th>
+            <th class='py-2'>Puntaje</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${rows.length ? rows.map(r=>`
+            <tr class='border-t border-slate-200/60'>
+              <td class='py-3'>${new Date(r.created_at+'Z').toLocaleString('es-ES')}</td>
+              <td class='py-3'><span class='badge ${badgeClass(r.risk_level)}'>${badgeText(r.risk_level)}</span></td>
+              <td class='py-3 font-bold'>${r.risk_score}</td>
+            </tr>
+          `).join('') : `
+            <tr><td class='py-6 text-slate-600' colspan='3'>Aún no hay registros.</td></tr>
+          `}
+        </tbody>
+      </table>
+    </div>
+  </div>
+` }) %>

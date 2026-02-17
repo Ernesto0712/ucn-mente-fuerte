@@ -1,0 +1,27 @@
+{
+  "name": "ucn-mente-fuerte",
+  "version": "1.0.0",
+  "description": "Centro Social en Línea – Mentes Fuertes (UCN) - App de salud mental con roles, cuestionario y seguimiento",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "seed": "node scripts/seed_admin.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "connect-sqlite3": "^0.9.0",
+    "dotenv": "^16.4.5",
+    "ejs": "^3.1.10",
+    "express": "^4.19.2",
+    "express-rate-limit": "^7.4.0",
+    "express-session": "^1.18.1",
+    "express-validator": "^7.2.0",
+    "helmet": "^7.1.0",
+    "nodemailer": "^6.9.14",
+    "sqlite3": "^5.1.7"
+  }
+}
