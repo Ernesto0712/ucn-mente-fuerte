@@ -14,23 +14,13 @@ const adminRoutes = require('./src/routes/admin');
 
 const app = express();
 
-// ✅ Render / proxies (fix rate-limit + forwarded headers)
+// ✅ Render / proxies
 app.set('trust proxy', 1);
-
-const isProd = process.env.NODE_ENV === 'production';
-
-// DB
-const db = openDb();
-initDb(db).catch((err) => {
-  console.error('DB init error:', err);
-  process.exit(1);
-});
-app.locals.db = db;
 
 // Security headers
 app.use(
   helmet({
-    contentSecurityPolicy: false, // keeping simple for CDN Tailwind
+    contentSecurityPolicy: false,
   })
 );
 
@@ -40,19 +30,17 @@ app.set('views', path.join(__dirname, 'views'));
 app.use(express.urlencoded({ extended: true, limit: '1mb' }));
 app.use(express.json({ limit: '1mb' }));
 
-// ✅ Sessions: SQLite en local, MemoryStore en producción (Render)
+// Sessions (si querés mantenerlo así por ahora)
 app.use(
   session({
-    store: isProd
-      ? undefined // MemoryStore (ok para demo/concurso) evita escribir archivos en Render
-      : new SQLiteStore({ db: 'sessions.sqlite', dir: path.join(__dirname, 'db') }),
-    secret: process.env.SESSION_SECRET || 'dev-secret-change-me',
+    store: new SQLiteStore({ db: 'sessions.sqlite', dir: path.join(__dirname, 'db') }),
+    secret: process.env.SESSION_SECRET || process.env.JWT_SECRET || 'dev-secret-change-me',
     resave: false,
     saveUninitialized: false,
     cookie: {
       httpOnly: true,
       sameSite: 'lax',
-      secure: isProd, // en producción (https) => true
+      // secure: true, // si usas HTTPS siempre (Render sí), puedes activarlo luego
       maxAge: 1000 * 60 * 60 * 12
     }
   })
@@ -88,7 +76,27 @@ app.use((req, res) => {
   res.status(404).render('pages/404', { title: 'No encontrado' });
 });
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Servidor listo en http://localhost:${PORT}`);
+// ✅ Error handler para que NO se caiga el servidor (y puedas ver el error)
+app.use((err, req, res, next) => {
+  console.error('UNHANDLED ERROR:', err);
+  res.status(500).send('Error interno del servidor');
 });
+
+// ✅ Arrancar SOLO cuando la DB esté lista
+async function start() {
+  try {
+    const db = openDb();
+    await initDb(db);
+    app.locals.db = db;
+
+    const PORT = process.env.PORT || 3000;
+    app.listen(PORT, () => {
+      console.log(`Servidor listo en http://localhost:${PORT}`);
+    });
+  } catch (err) {
+    console.error('DB init error:', err);
+    process.exit(1);
+  }
+}
+
+start();
