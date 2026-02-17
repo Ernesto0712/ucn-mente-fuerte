@@ -19,7 +19,7 @@ router.get('/student', requireAuth, async (req, res) => {
   const db = req.app.locals.db;
   const latest = await get(
     db,
-    'SELECT id, risk_level, risk_score, created_at FROM questionnaires WHERE user_id = ? ORDER BY datetime(created_at) DESC LIMIT 1',
+    'SELECT id, risk_level, risk_score, created_at FROM questionnaires WHERE user_id = ? ORDER BY created_at DESC LIMIT 1',
     [user.id]
   );
 
@@ -36,7 +36,12 @@ router.post('/student/form', requireAuth, async (req, res) => {
   const user = req.session.user;
   if (user.role !== 'student') return res.redirect('/admin');
 
-  const consented = req.body.consented === 'on' ? 1 : 0;
+  // ✅ Convertir consented a boolean real
+  const consented =
+    req.body.consented === '1' ||
+    req.body.consented === 'on' ||
+    req.body.consented === true;
+
   if (!consented) {
     req.session.flash = { type: 'warning', message: 'Debes aceptar el mensaje informativo para continuar.' };
     return res.redirect('/student/form');
@@ -57,6 +62,7 @@ router.post('/student/form', requireAuth, async (req, res) => {
   const { score, level } = classifyRisk(answers);
 
   const db = req.app.locals.db;
+
   const r = await run(
     db,
     'INSERT INTO questionnaires (user_id, consented, answers_json, risk_score, risk_level) VALUES (?, ?, ?, ?, ?)',
@@ -71,10 +77,11 @@ router.get('/student/thanks', requireAuth, async (req, res) => {
   if (user.role !== 'student') return res.redirect('/admin');
 
   const db = req.app.locals.db;
-  const q = await get(db, 'SELECT id, risk_level, risk_score, created_at FROM questionnaires WHERE id = ? AND user_id = ?', [
-    req.query.id,
-    user.id
-  ]);
+  const q = await get(
+    db,
+    'SELECT id, risk_level, risk_score, created_at FROM questionnaires WHERE id = ? AND user_id = ?',
+    [req.query.id, user.id]
+  );
 
   if (!q) return res.redirect('/student');
   res.render('pages/student/thanks', { title: 'Gracias', q });
@@ -87,7 +94,7 @@ router.get('/student/history', requireAuth, async (req, res) => {
   const db = req.app.locals.db;
   const rows = await all(
     db,
-    'SELECT id, risk_level, risk_score, created_at FROM questionnaires WHERE user_id = ? ORDER BY datetime(created_at) DESC',
+    'SELECT id, risk_level, risk_score, created_at FROM questionnaires WHERE user_id = ? ORDER BY created_at DESC',
     [user.id]
   );
 
